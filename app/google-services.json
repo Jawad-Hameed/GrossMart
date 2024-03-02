@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "827859918761",
+    "project_id": "grossmart-dd12b",
+    "storage_bucket": "grossmart-dd12b.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:827859918761:android:b29dcabbd8a469d5472eb8",
+        "android_client_info": {
+          "package_name": "com.jawadkhansahil.grossmart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEfIOVB34HgSSmpB2DLR607js8aRhuIoM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
