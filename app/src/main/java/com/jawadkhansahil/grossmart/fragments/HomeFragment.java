@@ -17,11 +17,13 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.jawadkhansahil.grossmart.R;
+import com.jawadkhansahil.grossmart.SharedPreference;
 import com.jawadkhansahil.grossmart.adapter.CategoryAdapter;
 import com.jawadkhansahil.grossmart.adapter.ProductAdapter;
 import com.jawadkhansahil.grossmart.databinding.FragmentHomeBinding;
 import com.jawadkhansahil.grossmart.models.CategoryModel;
 import com.jawadkhansahil.grossmart.models.ProductModel;
+import com.jawadkhansahil.grossmart.models.UserModel;
 
 import java.util.ArrayList;
 
@@ -52,7 +54,15 @@ public class HomeFragment extends Fragment {
 
         CategoryAdapter categoryAdapter = new CategoryAdapter(getContext(), categoryModelArrayList, binding.productList);
         binding.categoryList.setAdapter(categoryAdapter);
+        SharedPreference sharedPreference = new SharedPreference(getContext());
+        db.collection("Users").document(sharedPreference.getString("email")).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                UserModel userModel = documentSnapshot.toObject(UserModel.class);
+                binding.userName.setText("Hey "+ userModel.getName());
 
+            }
+        });
         db.collection("Category").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {

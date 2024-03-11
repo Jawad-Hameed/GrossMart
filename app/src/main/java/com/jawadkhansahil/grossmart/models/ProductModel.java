@@ -4,25 +4,27 @@ public class ProductModel {
     String productID;
     String productImage;
     String productName;
-    String productWeight;
+    String productQuantity;
     String productPrice;
     String productCalories;
     String productDescription;
     String deliveryTime;
+    String productUnit;
 
 
     public ProductModel() {
     }
 
-    public ProductModel(String productID, String productImage, String productName, String productWeight, String productPrice, String productCalories, String productDescription, String deliveryTime) {
+    public ProductModel(String productID, String productImage, String productName, String productQuantity, String productPrice, String productCalories, String productDescription, String deliveryTime, String productUnit) {
         this.productID = productID;
         this.productImage = productImage;
         this.productName = productName;
-        this.productWeight = productWeight;
+        this.productQuantity = productQuantity;
         this.productPrice = productPrice;
         this.productCalories = productCalories;
         this.productDescription = productDescription;
         this.deliveryTime = deliveryTime;
+        this.productUnit = productUnit;
     }
 
     public String getProductID() {
@@ -49,12 +51,12 @@ public class ProductModel {
         this.productName = productName;
     }
 
-    public String getProductWeight() {
-        return productWeight;
+    public String getProductQuantity() {
+        return productQuantity;
     }
 
-    public void setProductWeight(String productWeight) {
-        this.productWeight = productWeight;
+    public void setProductQuantity(String productQuantity) {
+        this.productQuantity = productQuantity;
     }
 
     public String getProductPrice() {
@@ -87,5 +89,13 @@ public class ProductModel {
 
     public void setDeliveryTime(String deliveryTime) {
         this.deliveryTime = deliveryTime;
+    }
+
+    public String getProductUnit() {
+        return productUnit;
+    }
+
+    public void setProductUnit(String productUnit) {
+        this.productUnit = productUnit;
     }
 }
