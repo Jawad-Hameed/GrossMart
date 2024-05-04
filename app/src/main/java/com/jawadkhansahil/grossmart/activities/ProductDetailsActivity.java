@@ -48,6 +48,12 @@ public class ProductDetailsActivity extends AppCompatActivity {
             }
         });
 
+        binding.openCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(ProductDetailsActivity.this, CartActivity.class));
+            }
+        });
         binding.addToCart.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

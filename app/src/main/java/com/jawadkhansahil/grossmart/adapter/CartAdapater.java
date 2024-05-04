@@ -4,6 +4,7 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,10 +14,13 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.jawadkhansahil.grossmart.DeleteClickListener;
 import com.jawadkhansahil.grossmart.R;
 import com.jawadkhansahil.grossmart.SharedPreference;
+import com.jawadkhansahil.grossmart.activities.CartActivity;
 import com.jawadkhansahil.grossmart.models.ProductModel;
 
 import java.util.ArrayList;
@@ -25,10 +29,12 @@ public class CartAdapater extends RecyclerView.Adapter<CartAdapater.CartViewHold
 
     Context context;
     ArrayList<ProductModel> productModelArrayList;
-
-    public CartAdapater(Context context, ArrayList<ProductModel> productModelArrayList) {
+    DeleteClickListener listener;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    public CartAdapater(Context context, ArrayList<ProductModel> productModelArrayList, DeleteClickListener listener) {
         this.context = context;
         this.productModelArrayList = productModelArrayList;
+        this.listener = listener;
     }
 
     @NonNull
@@ -46,23 +52,65 @@ public class CartAdapater extends RecyclerView.Adapter<CartAdapater.CartViewHold
         holder.productName.setText(productModel.getProductName());
         Glide.with(context).load(productModel.getProductImage()).into(holder.productImage);
         holder.productPrice.setText(productModel.getProductPrice()+ " Rs");
+        holder.productCount.setText(quantity[0] + " " +productModel.getProductUnit());
+        SharedPreference sharedPreference = new SharedPreference(context);
+
         holder.addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 quantity[0]++;
-                holder.productCount.setText(quantity[0] +" " +productModel.getProductUnit());
+                db.collection("Users").document(sharedPreference.getString("email")).collection("UserCart").document(productModel.getProductID()).update("productQuantity", String.valueOf(quantity[0]))
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                double price = quantity[0]*Double.parseDouble(productModel.getProductPrice());
+                                db.collection("Users").document(sharedPreference.getString("email")).collection("UserCart").document(productModel.getProductID()).update("productPrice", String.valueOf(price)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+
+                                    }
+                                });
+                                holder.productCount.setText(String.valueOf(quantity[0]) + " " + productModel.getProductUnit());
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                // Handle failure
+                            }
+                        });
             }
         });
 
         holder.minusBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (quantity[0] > 1){
+                if (quantity[0] > 1) {
                     quantity[0]--;
-                    holder.productCount.setText(quantity[0] +" " +productModel.getProductUnit());
+                    db.collection("Users").document(sharedPreference.getString("email")).collection("UserCart").document(productModel.getProductID()).update("productQuantity", String.valueOf(quantity[0]))
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    double price = quantity[0]*Double.parseDouble(productModel.getProductPrice());
+                                    db.collection("Users").document(sharedPreference.getString("email")).collection("UserCart").document(productModel.getProductID()).update("productPrice", String.valueOf(price)).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void unused) {
+
+                                        }
+                                    });
+                                    holder.productCount.setText(String.valueOf(quantity[0]) + " " + productModel.getProductUnit());
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    // Handle failure
+                                }
+                            });
                 }
             }
         });
+
 
         holder.deleteItem.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -72,11 +120,8 @@ public class CartAdapater extends RecyclerView.Adapter<CartAdapater.CartViewHold
                     @Override
                     public void onSuccess(Void unused) {
                         Toast.makeText(context, "Removed Successfully", Toast.LENGTH_SHORT).show();
+                        listener.deleteItem();
 
-                        productModelArrayList.remove(holder.getAdapterPosition());
-
-                        // Notify adapter about the item removal
-                        notifyItemRemoved(holder.getAdapterPosition());
                     }
                 });
             }
@@ -85,7 +130,7 @@ public class CartAdapater extends RecyclerView.Adapter<CartAdapater.CartViewHold
 
     @Override
     public int getItemCount() {
-        return productModelArrayList.size();
+        return productModelArrayList.size(); // This should return the actual size of the dataset
     }
 
     public class CartViewHolder extends RecyclerView.ViewHolder {
